@@ -1,0 +1,163 @@
+1.4.49
+Ipoteza:
+1.Orice latice finita este completa
+(A, <=)-latice finita arbitrara A!=0
+ddaca:
+(1)(A, <=) latice:
+deci oricare ar fi x, y, apartin A
+exista atat inf{x, y}, cat si sup{x, y}
+notam inf(x, y) = x^y
+(2)A- multime finita
+ 
+Concluzie:
+Avem de demonstrat ca orice latice finita
+completa, deci:
+oricare ar fi X, X submultime a lui A
+exista atat inf(X), cat si sup(X)
+
+Demonstratie:
+
+Notam cu pn:"exista inf{a1, a2, a3,...an}"
+unde a1, a2, a3...an sunt elemente arbitrar alese din A
+deci {a1, a2, a3,...an} submultime oarecare din A
+
+Vom demonstra ca pn este "adevarata"
+oricare ar fi n numar natural, n<=card(A)
+(Adica demonstram ca exista inf(X), 
+oricare ar fi card de X<=card A, unde X inclus in A)
+
+I
+"p(0):exista inf{0}"
+"adevarata" deoarce din(2)
+=> are un cel mai mic si un cel mai mare element
+
+II
+presupunem ca 
+"p(k): exista inf{a1, a2, a3,...ak}"
+"adevarata"
+
+vom demonstra ca p(k)"adevarata" 
+implica p(k+1)"adevarata"
+
+"p(k+1): exista inf{a1, a2, a3,...ak, ak+1}"
+
+inf{a1, a2, a3,...ak, ak+1} = a1^a2^...ak^ak+1 =
+= (1^a2^...ak)^ak+1 = inf{a1^a2^...ak, ak+1}
+
+cum a1^a2^...ak exista si este un element din A
+si la randul sau, ak+1 este un element din A
+=> din(1)("oricare ar fi x, y, apartin A
+exista atat inf{x, y}, cat si sup{x, y}
+notam inf(x, y) = x^y")
+=>exista inf{a1^a2^...ak, ak+1}
+
+deci p(k+1) este adevarata
+
+Conform principiului inductiei matematice:
+din I(etapa de verificare) si II(etapa de demonstratie)
+=> pn:"exista inf{a1, a2, a3,...an}"
+unde a1, a2, a3...an sunt elemente arbitrar alese din A
+"adevarata" pentru orice n- numar natural, n<=card(A)
+
+Deci, am demonstrat ca orice latice finita este completa
+
+
+1.4.50
+
+1. Orice lant este o latice
+M submultime a lui R
+
+(M, <=)
+este lant ddaca 
+
+Oricare ar fi x, y apartin lui M
+avem x<=y sau y<=x(*)
+
+Pentru a demonstra ca lantul (M, <=) este 
+latice trebuie sa demonstram ca:
+
+Oricare ar fi x, y apartin lui M
+exista inf{x, y}
+exista sup{x, y}
+
+Din relatia (*)=>
+Oricare ar fi x, y apoartin M
+
+caz I:
+avem x<=y(#)
+1.atunci x<=x(reflexivitatea relatiei de ordine)
+2.si x<=y(#)
+Din 1 si 2 => x este cel mai mic element din 
+{x, y}.
+Atunci cand cel mai mic element exista,
+este unic si este egal cu infimimum{x, y}
+analog supremum
+
+analog caz II
+
+=>Orice lant este o latice
+
+2.Este orice lant o latice completa?
+Contraexemplu (N, <=)
+inf(N) exista
+dar nu exista sup(N)
+
+Pentru N submultime a lui N nu se respecta conditiile unei latice
+
+1.4.51
+Orice latice completa are cel mai mic si cel mai mare element
+M multime arbitrara
+(M, <=)-latice completa
+=> exista a apartine M, a=inf(M)(*)
+=> exista b apartine M, b=sup(M)(**)
+(*)(**)=>
+a- cel mai mic element
+b- cel mai mare element
+deci, orice latice completa are cel mai mic si cel mai mare element
+
+1.4.52
+(N, |) este o latice (aici cu | se noteaza divizibilitatea). Este
+(N, |) completa?
+1. (N, |) este o latice
+inf{x, y}=(x, y), cmmdc
+sup{x, y}=[x, y], cmmmc
+2. Se demonstreaza cu inductivitate(analog 1.4.49)
+cu precizarea ca inf{0} exista si este egal cu 0
+
+1.4.53
+
+1.(N, <=)este o latice care nu este completa.
+(analog 1.4.50) "Orice lant este o latice"
+=>(N, <=) este latice
+
+Pentru a demonstra ca (N, <=) nu este o latice 
+completa, este de ajuns sa aducem un contraexemplu
+
+Cum sup{N} nu e definit in N si N submultime a lui N,
+=>exista o submultime care nu are inf sau sup
+=>(N, <=)este o latice care nu este completa.
+
+2.Explicati de ce acest exemplu nu 
+contrazice Propozitia 1.4.32.
+ 
+Propozitia 1.4.32 spune ca trebuie sa 
+existe inf de orice submultime
+
+Dar inf{0} nu e definit in N
+=> Observatia nu contrazice 1.4.32
+
+1.4.54.
+
+A-multime oarecare
+P(A)-multimea submultimilor lui A
+1.Demonstram ca P(A) latice
+(demonstratia este triviala, 
+inf{x, y}=x intersectat cu y 
+unde x, y sunt doua elemente din P(A)
+"Intersectia a doua multimi este o operatie valida")
+2.Demonstram prin model inductiv 1.4.49 ca p(n) adevarat
+cu precizarea ca p(0):inf{0}=0
+
+
+
+
