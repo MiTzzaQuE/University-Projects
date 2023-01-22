@@ -1,0 +1,61 @@
+     1                                  ;27.Se dă un sir de caractere (definit in segmentul de date). Să se citească de la tastatură un caracter, să se determine numărul de apariţii al acelui caracter în şirul dat şi să se afişeze acel caracte
+     2                                  
+     3                                  bits 32
+     4                                  
+     5                                  global start        
+     6                                  
+     7                                  extern exit, printf, scanf        
+     8                                  import exit msvcrt.dll     
+     9                                  import printf msvcrt.dll     
+    10                                  import scanf msvcrt.dll      
+    11                                                            
+    12                                  segment  data use32 class=data
+    13 00000000 616C6162616C202061-         sir db "alabal  apor  toca la",0 ;declararea sirului sir
+    13 00000009 706F722020746F6361-
+    13 00000012 206C6100           
+    14                                      len equ $-sir               ;lungimea sirului sir
+    15 00000016 00000000                    contor dd 0                 ;contorul in care retinem numarul de aparitii a caracterului citit
+    16 0000001A 00                          caracter db 0               ;caracterul citit de la tastatură
+    17 0000001B 446174692063617261-         format db "Dati caracterul: ",0;formatul pentru citire
+    17 00000024 63746572756C3A2000 
+    18 0000002D 256300                      format_c db "%c",0          ;formatul unui caracte de tip char
+    19 00000030 256400                      format_nr db "%d",0         ;formatul pentru un numar in baza 10 
+    20 00000033 436172616374657275-         mesaj db "Caracterul %c apare in text de %d ori",0;mesajul care se afiseaza pe ecran la finalul problemei
+    20 0000003C 6C2025632061706172-
+    20 00000045 6520696E2074657874-
+    20 0000004E 206465202564206F72-
+    20 00000057 6900               
+    21                                      
+    22                                  segment  code use32 class=code
+    23                                      start:
+    24                                       
+    25 00000000 68[1B000000]                    push format             ; ! pe stiva se pune adresa string-ului, nu valoarea
+    26 00000005 FF15[00000000]                  call [printf]           ; apelam functia printf pentru afisare     
+    27 0000000B 83C404                          add esp, 4              ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 1 = nr de parametri 
+    28                                          
+    29 0000000E 68[1A000000]                    push caracter           ;  punem pe stiva adresa caracterului c
+    30 00000013 68[2D000000]                    push format_c           ; punem pe stiva adresa string-ului
+    31 00000018 FF15[00000000]                  call [scanf]            ; apelam functia scanf pentru citire
+    32 0000001E 83C408                          add esp, 4*2            ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 2 = nr de parametri
+    33                                          
+    34 00000021 BE[00000000]                    mov esi, sir            ; punem in registrul esi adresa sirului sir
+    35 00000026 B916000000                      mov ecx, len            ; ecx = lungimea sirului sir
+    36 0000002B 8B1D[16000000]                  mov ebx, dword[contor]  ; initializam un registru cu 0, contorul
+    37                                          
+    38                                          repeta:                 ; inceputul buclei
+    39 00000031 AC                                  lodsb               ; incarcarea in memorie/al a unui byte
+    40 00000032 3A05[1A000000]                      cmp al,[caracter]   ; comparam byte-ul incarcat in al cu valoarea caracterului
+    41 00000038 7501                                jne altfel          ; daca nu sunt egale trece la urmatorul element din sir
+    42 0000003A 43                                  inc ebx             ; daca caracterul apare in sir, incrementam registrul ebx
+    43                                                  
+    44                                              altfel:             ; eticheta la care sare daca caracterul nu este egal cu pozitia curenta din sir
+    45 0000003B E2F4                                loop repeta         ; reluarea buclei cat timp ecx != 0
+    46                                              
+    47 0000003D 53                              push ebx                ; punem pe stiva adresa registrului ebx
+    48 0000003E FF35[1A000000]                  push dword[caracter]    ; punem pe stiva valoarea din variabila caracter(caracterul care trebuia verificat)
+    49 00000044 68[33000000]                    push mesaj              ; pe stiva se pune adresa mesajului
+    50 00000049 FF15[00000000]                  call [printf]           ; apelam functia printf pentru afisare
+    51 0000004F 83C40C                          add esp, 4*3            ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 3 = nr de parametri
+    52                                          
+    53 00000052 6A00                            push  dword 0           ; punem pe stiva parametrul pentru exit
+    54 00000054 FF15[00000000]                  call  [exit]            ; apelam exit pentru a incheia programul

@@ -1,0 +1,117 @@
+;Se da un fisier text. Fisierul contine numere (in baza 10) separate prin spatii. Sa se citeasca continutul acestui fisier, sa se determine minimul numerelor citite si sa se ;scrie rezultatul la sfarsitul fisierului.
+
+bits 32 ; assembling for the 32 bits architecture
+
+; declare the EntryPoint (a label defining the very first instruction of the program)
+global start        
+
+; declare external functions needed by our program
+extern exit, fopen, fprintf, fclose, fread
+extern scanf
+import scanf msvcrt.dll
+extern printf
+import printf msvcrt.dll
+import exit msvcrt.dll
+import fopen msvcrt.dll
+import fprintf msvcrt.dll
+import fclose msvcrt.dll
+import fread msvcrt.dll
+
+; our data is declared here (the variables needed by our program)
+segment data use32 class=data
+    ; ...
+    
+    fisier db "file27.txt", 0
+    
+    acces_mode db "a+", 0
+    
+    descriptor dd 0
+    
+    afisare db "Numarul minim din fisier este %d", 0
+    
+    minim dd 255
+    
+    curent db 0 
+    
+    sir resb 100
+    
+    len equ 100
+    
+    ten db 10
+    
+    
+    
+; our code starts here
+segment code use32 class=code
+    start:
+        
+        
+        push dword acces_mode
+        push dword fisier
+        call [fopen]
+        add esp, 4*2
+        
+        mov [descriptor], eax
+        
+        cmp eax, 0
+        je final
+        
+        
+        push dword [descriptor]
+        push dword len
+        push dword 1
+        push dword sir
+        call [fread]
+        add esp, 4*4
+        
+        mov esi, 0
+        mov ecx, len
+        
+        jecxz final
+        
+        repeta:
+            mov al, [sir+esi]
+            cmp al, ' '
+            je sf
+            cmp al, 0
+            je sf4
+            mov bl, al
+            sub bl, '0'
+            mov al, [curent]
+            mul byte[ten]
+            add al, bl
+            mov [curent], al
+            jmp sf2
+            
+            sf:
+            mov bl, [curent]
+            mov byte[curent], 0
+            cmp [minim], bl
+            jb sf2    
+            mov [minim], bl
+            
+            sf2:
+            inc esi
+        loop repeta
+        sf4
+        mov bl, [curent]
+        cmp [minim], bl
+        jb sf3    
+        mov [minim], bl
+        sf3:
+        
+        push dword [minim]
+        ;push dword [descriptor]
+        push dword afisare
+        call [printf]
+        add esp, 4*2
+        
+        ;push dword [descriptor]
+        ;call [fclose]
+        ;add esp, 4
+        
+        final:
+        
+        ; exit(0)
+        push    dword 0      ; push the parameter for exit onto the stack
+        call    [exit]       ; call exit to terminate the program

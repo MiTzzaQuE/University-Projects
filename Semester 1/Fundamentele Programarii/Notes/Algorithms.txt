@@ -1,0 +1,162 @@
+
+def consistent2(x,l):
+    if len(l)==1:
+        return True
+    if l[-1]-1==l[-2]:
+        return True
+    return False
+
+def solution2(x,l,N):
+    sum=0
+    for el in l:
+        sum=sum+x[el]
+    if sum%N==0:
+        return True
+    return False
+def solutionFound2(x,l):
+    for el in l:
+        print(x[el],end=" ")
+    print("")
+
+
+
+def backRec(l,x,DIM,N):     -BACK
+    l.append(0)
+    for i in range(0,DIM):
+        l[-1] = i
+        if consistent2(x,l):
+            if solution2(x,l,N):
+                solutionFound2(x,l)
+            backRec(l,x,DIM,N)
+    l.pop()
+
+
+
+
+def backIter2(x,dim,N):
+    l=[-1]
+    while len(l)>0:
+        choosed = False
+
+
+        while not choosed and l[-1]<dim-1:
+            l[-1] = l[-1]+1
+            choosed = consistent2(x,l)
+        if choosed:
+            if solution2(x,l, N):
+                solutionFound2(x,l)
+            l.append(-1) # expand candidate solution
+        else:
+            l = l[:-1] #go back one component
+
+
+def findMax(l):   -DIVIDE AND CONQUER
+ """
+ find the greatest element in the list
+ l list of elements
+ return max
+ """
+ if len(l)==1:
+ #base case
+ 	return l[0]
+ #divide into 2 of size n/2
+ mid = len(l) /2
+ max1 = findMax(l[:mid])
+ max2 = findMax(l[mid:])
+ #combine the results
+ if max1<max2:
+ 	return max2
+ return max1
+
+def divid_et_imp_prod_pare(l,st,dr):
+     if dr== st:
+        return 0
+     if dr-st==1:
+         if st%2==0:
+             return l[st]
+         else: return 1
+     mij=(st+dr)//2
+     return divid_et_imp_prod_pare(l,st,mij)*divid_et_imp_prod_pare(l,mij,dr)
+
+
+def greedy(c):       -GREEDY
+
+ b = [] #start with an empty set as a candidate solution
+ while not solution(b) and c!=[]:
+ 	#select the local optimum (the best candidate)
+ 	candidate = selectMostPromissing(c)
+ 	#remove the current candidate
+ 	c.remove(candidate)
+ 	#if the new extended candidate solution is acceptable
+ 	if acceptable(b+[candidate]):
+ 		b.append(candidate)
+ if solution(b):
+ 	return b
+ #there is no solution
+ return None
+
+def longestSublist(a):     	-PROGRAMARE DINAMICA   SUBLISTA
+     """
+     Determines the longest increasing sub-list
+     a - a list of element
+     return sublist of x, the longest increasing sublist
+     """
+     lg=len(a)
+     #initialise l and p
+     l = [0]*len(a)
+     p = [0]*len(a)
+     l[lg-1] = 1
+     p[lg-1]= -1
+     for k in range(lg-2, -1, -1):
+        p[k] = -1
+        l[k]=1
+        for i in range(k+1, lg):
+            if a[i]>=a[k] and l[k]<l[i]+1:
+                l[k] = l[i]+1
+                p[k] = i
+     #identify the longest sublist
+     #find the maximum length
+     j = 0
+     for i in range(0, lg):
+        if l[i]>l[j]:
+            j=i
+     #collect the results using the position list
+     rez = []
+     while j!=-1:
+        rez = rez+[a[j]]
+        j = p[j]
+     return rez
+
+
+def longestSubsecvsum(a):   -SUBSECVENTA
+     """
+     Determines the longest increasing sub-list
+     a - a list of element
+     return sublist of x, the longest increasing sublist
+     """
+     lg=len(a)
+
+     l = [0]*len(a)
+     p = [0]*len(a)
+     l[lg-1] = 1
+     p[lg-1]= -1
+     for k in range(lg-2, -1, -1):
+        p[k] = -1
+        l[k]=a[k]
+        i=k+1
+        if  l[k] < l[i]:
+            l[k] = l[i] + a[k]
+            p[k] = i
+
+     j = 0
+     for i in range(0, lg):
+        if l[i]>l[j]:
+            j=i
+
+     rez = []
+     while j!=-1:
+        rez = rez+[a[j]]
+        j = p[j]
+     return rez
+
+

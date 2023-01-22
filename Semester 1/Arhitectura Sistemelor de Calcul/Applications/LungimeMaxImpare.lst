@@ -1,0 +1,99 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit , printf              ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                  import printf msvcrt.dll                          ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  
+    11                                  ; our data is declared here (the variables needed by our program)
+    12                                  segment data use32 class=data
+    13                                      ; ...
+    14 00000000 0C0D0207FD6405111B-         sir db 12,13,10b,7,-3,100, 101b, 11h, 27, -1, 4, 1, 3, 5, 7, 9, 11
+    14 00000009 FF0401030507090B   
+    15                                      lngsir equ $-sir
+    16 00000011 <res 00000064>              secvmax resb 100
+    17 00000075 00                          lungmax db 0
+    18 00000076 00                          cont db 0
+    19 00000077 2564256300                  format db "%d%c", 0
+    20                                      
+    21                                  ; our code starts here
+    22                                  segment code use32 class=code
+    23                                      start:
+    24                                          ; ...
+    25                                          
+    26 00000000 BE[00000000]                    mov esi, sir
+    27 00000005 B911000000                      mov ecx, lngsir
+    28                                          
+    29                                          parcurgere:
+    30 0000000A AC                                  lodsb
+    31 0000000B A801                                test al, 01h
+    32 0000000D 7408                                jz verifica
+    33                                              
+    34 0000000F FE05[76000000]                      inc byte[cont]
+    35 00000015 EB33                                jmp sfarsit
+    36                                              verifica:
+    37 00000017 B800000000                              mov eax, 0
+    38 0000001C A0[76000000]                            mov al, byte[cont]
+    39 00000021 3A05[75000000]                          cmp al, byte[lungmax]
+    40 00000027 7621                                    jbe sfarsit
+    41                                                  
+    42 00000029 A2[75000000]                            mov byte[lungmax], al
+    43 0000002E 29C6                                    sub esi, eax
+    44 00000030 4E                                      dec esi
+    45                                                  
+    46 00000031 51                                      push ecx
+    47 00000032 B900000000                              mov ecx, 0
+    48 00000037 BF[11000000]                            mov edi, secvmax
+    49 0000003C 88C1                                    mov cl, al
+    50                                                  stocheaza:
+    51 0000003E A4                                          movsb
+    52 0000003F E2FD                                    loop stocheaza
+    53 00000041 59                                      pop ecx
+    54 00000042 46                                      inc esi
+    55 00000043 C605[76000000]00                        mov byte[cont], 0
+    56                                                  
+    57                                              sfarsit:
+    58 0000004A E2BE                            loop parcurgere
+    59                                          
+    60 0000004C B800000000                      mov eax, 0
+    61 00000051 A0[76000000]                    mov al, byte[cont]
+    62 00000056 3A05[75000000]                  cmp al, byte[lungmax]
+    63 0000005C 7618                            jbe sfarsit1
+    64                                                  
+    65 0000005E A2[75000000]                    mov byte[lungmax], al
+    66 00000063 29C6                            sub esi, eax
+    67                                                  
+    68 00000065 51                              push ecx
+    69 00000066 B900000000                      mov ecx, 0
+    70 0000006B BF[11000000]                    mov edi, secvmax
+    71 00000070 88C1                            mov cl, al
+    72                                          stocheaza1:
+    73 00000072 A4                                  movsb
+    74 00000073 E2FD                            loop stocheaza1
+    75 00000075 59                              pop ecx
+    76                                          
+    77                                          sfarsit1:
+    78                                          
+    79 00000076 B900000000                      mov ecx, 0
+    80 0000007B 8A0D[75000000]                  mov cl, byte[lungmax]
+    81 00000081 BE[11000000]                    mov esi, secvmax
+    82                                          afisare:
+    83 00000086 B800000000                          mov eax, 0
+    84 0000008B AC                                  lodsb
+    85 0000008C 51                                  push ecx
+    86 0000008D 6A20                                push dword " "
+    87 0000008F 50                                  push eax            
+    88 00000090 68[77000000]                        push dword format
+    89 00000095 FF15[00000000]                      call [printf]
+    90 0000009B 83C40C                              add esp, 12            
+    91 0000009E 59                                  pop ecx
+    92 0000009F E2E5                            loop afisare
+    93                                          
+    94                                          final:
+    95                                          
+    96                                          ; exit(0)
+    97 000000A1 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    98 000000A3 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

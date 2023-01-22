@@ -1,0 +1,73 @@
+     1                                  ;4.Se dau doua numere naturale a si b (a, b: word, definite in segmentul de date). Sa se calculeze produsul lor si sa se afiseze in urmatorul format: "<a> * <b> = <result>"
+     2                                  ;Exemplu: "2 * 4 = 8"
+     3                                  ;Valorile vor fi afisate in format decimal (baza 10) cu semn.
+     4                                  
+     5                                  bits 32
+     6                                  
+     7                                  global start        
+     8                                  
+     9                                  extern exit, printf, scanf            
+    10                                  import exit msvcrt.dll     
+    11                                  import printf msvcrt.dll     
+    12                                  import scanf msvcrt.dll      
+    13                                                            
+    14                                  segment  data use32 class=data
+    15 00000000 0000                        a dw 0                 ;definim variabila word a
+    16 00000002 0000                        b dw 0                 ;definim variabila word b
+    17 00000004 256400                      format db "%d", 0  ; %d <=> un numar decimal (baza 10)
+    18 00000007 61203D2000              	format1  db "a = ", 0  ;mesaj pentru selectarea numarului a
+    19 0000000C 62203D2000                  format2  db "b = ", 0  ;mesaj pentru selectarea numarului b 
+    20 00000011 50726F647573756C20-         message2  db "Produsul numerelor este: %d * %d = %d", 0 ;mesaj pentrua afisarea produsului numerelor a si b 
+    20 0000001A 6E756D6572656C6F72-
+    20 00000023 20657374653A202564-
+    20 0000002C 202A202564203D2025-
+    20 00000035 6400               
+    21                                      
+    22                                  segment  code use32 class=code
+    23                                      start:
+    24                                                                                 
+    25                                          ; vom apela scanf(format, n) => se va citi un numar in variabila n
+    26                                          ; punem parametrii pe stiva de la dreapta la stanga
+    27                                          
+    28 00000000 68[07000000]                    push dword format1  ; ! pe stiva se pune adresa string-ului, nu valoarea
+    29 00000005 FF15[00000000]                  call [printf]       ; apelam functia printf pentru afisare      
+    30 0000000B 83C404                          add esp, 4*1        ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 1 = nr de parametri  
+    31                                          
+    32 0000000E 68[00000000]                    push  dword a       ;punem pe stiva adresa variabilei a       
+    33 00000013 68[04000000]                    push  dword format  ;punem pe stiva adresa string-ului
+    34 00000018 FF15[00000000]                  call  [scanf]       ; apelam functia scanf pentru citire
+    35 0000001E 83C408                          add  esp, 4 * 2     ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 2 = nr de parametri
+    36                                          
+    37 00000021 68[0C000000]                    push dword format2  ; ! pe stiva se pune adresa string-ului, nu valoarea
+    38 00000026 FF15[00000000]                  call [printf]       ; apelam functia printf pentru afisare      
+    39 0000002C 83C404                          add esp, 4*1        ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 1 = nr de parametri
+    40                                  
+    41 0000002F 68[02000000]                    push  dword b       ;punem pe stiva adresa variabilei a 
+    42 00000034 68[04000000]                    push  dword format  ;punem pe stiva adresa string-ului
+    43 00000039 FF15[00000000]                  call  [scanf]       ; apelam functia scanf pentru citire
+    44 0000003F 83C408                          add  esp, 4 * 2     ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 2 = nr de parametri
+    45                                          
+    46 00000042 66A1[00000000]                  mov ax, word[a]     ;se pune in ax word-ul a
+    47 00000048 66F72D[02000000]                imul word[b]        ;se face inmultirea cu semn a variabilelor a si b
+    48                                          
+    49 0000004F 6652                            push dx             ;se pune in stiva partea high din rezultat
+    50 00000051 6650                            push ax             ;se pune in stiva partea low din rezultat
+    51 00000053 5B                              pop ebx             ;se ia de pe stiva intr-un dublu cuvant rezultatul din dx:ax
+    52                                          
+    53 00000054 66A1[00000000]                  mov ax,[a]          ;punem in ax valoarea variabilei a
+    54 0000005A 98                              cwde                ;convertire cu semn de la cuvant la dublucuvant
+    55 0000005B 89C1                            mov ecx,eax         ;salvam in ecx rezultatul
+    56                                          
+    57 0000005D 66A1[02000000]                  mov ax, [b]         ;punem in ax valoarea variabilei b
+    58 00000063 98                              cwde                ;convertire cu semn de la cuvant la dublucuvant
+    59                                          
+    60 00000064 53                              push  dword ebx     ;punem pe stiva valoarea rezultatului inmultirii
+    61 00000065 50                              push  dword eax     ;punem pe stiva valoarea variabilei b
+    62 00000066 51                              push  dword ecx     ;punem pe stiva valoarea variabilei a
+    63 00000067 68[11000000]                    push  dword message2;punem pe stiva adresa mesajului de tip string
+    64 0000006C FF15[00000000]                  call  [printf]      ; apelam functia printf pentru afisare   
+    65 00000072 83C410                          add  esp,4*4        ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 4 = nr de parametri
+    66                                          
+    67                                          ; exit(0)
+    68 00000075 6A00                            push  dword 0       ; punem pe stiva parametrul pentru exit
+    69 00000077 FF15[00000000]                  call  [exit]        ; apelam exit pentru a incheia programul

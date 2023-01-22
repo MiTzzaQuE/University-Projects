@@ -1,0 +1,144 @@
+     1                                  bits 32 
+     2                                  global start        
+     3                                  
+     4                                  extern exit , scanf, printf, fprintf, fopen ,fread ,fclose            
+     5                                  import exit msvcrt.dll    
+     6                                  import scanf msvcrt.dll                        
+     7                                  import printf msvcrt.dll
+     8                                  import fprintf msvcrt.dll
+     9                                  import fopen msvcrt.dll
+    10                                  import fread msvcrt.dll
+    11                                  import fclose msvcrt.dll
+    12                                  segment data use32 class=data
+    13                                      
+    14                                      
+    15 00000000 722B00                      accesmode db "r+", 0
+    16 00000003 FFFFFFFF                    descriptor dd -1
+    17                                      
+    18 00000007 6F75747075742E7478-         fisier_output db "output.txt",0
+    18 00000010 7400               
+    19 00000012 772B00                      accesmode2 db "w+",0
+    20 00000015 FFFFFFFF                    descriptor2 dd -1
+    21 00000019 257300                      formats db "%s",0
+    22 0000001C 256300                      formatc db "%c",0
+    23 0000001F 257800                      format db "%x",0
+    24 00000022 00000000                    n dd 0
+    25 00000026 00000000                    nr dd 0
+    26                                      
+    27                                      
+    28 0000002A 00000000                    contor_c dd 0
+    29 0000002E 00000000                    contor_nr dd 0
+    30 00000032 00<rept>                    fisier_input times 100 db 0
+    31 00000096 00<rept>                    rez times 100 db 0
+    32 000000FA 00                          sir db 0
+    33                                  segment code use32 class=code
+    34                                      start:
+    35 00000000 68[32000000]                    push dword fisier_input
+    36 00000005 68[19000000]                    push dword formats
+    37 0000000A FF15[00000000]                  call [scanf]
+    38 00000010 83C408                          add esp, 8
+    39                                          
+    40 00000013 68[22000000]                    push dword n
+    41 00000018 68[1F000000]                    push dword format
+    42 0000001D FF15[00000000]                  call [scanf]
+    43 00000023 83C408                          add esp,8
+    44                                          
+    45 00000026 68[00000000]                    push dword accesmode
+    46 0000002B 68[32000000]                    push dword fisier_input
+    47 00000030 FF15[00000000]                  call [fopen]
+    48 00000036 83C408                          add esp,8
+    49                                          
+    50 00000039 A3[03000000]                    mov [descriptor],eax
+    51 0000003E 83F800                          cmp eax,0
+    52 00000041 0F84CD000000                    je final
+    53                                          
+    54 00000047 FF35[03000000]                  push dword [descriptor]
+    55 0000004D 6A64                            push dword 100
+    56 0000004F 6A01                            push dword 1
+    57 00000051 68[FA000000]                    push dword sir
+    58 00000056 FF15[00000000]                  call [fread]
+    59 0000005C 83C410                          add esp,4*4
+    60                                          
+    61                                          ;push dword sir
+    62                                          ;push dword formats
+    63                                          ;call [printf]
+    64                                          ;add esp,8
+    65                                          
+    66 0000005F BE[FA000000]                    mov esi,sir
+    67 00000064 BF[96000000]                    mov edi,rez
+    68 00000069 8B0D[22000000]                  mov ecx,[n]
+    69                                          
+    70                                          repeta:
+    71 0000006F AC                                  lodsb
+    72 00000070 3C00                                cmp al,""
+    73 00000072 0F849C000000                        je final
+    74                                              
+    75 00000078 3C20                                cmp al," "
+    76 0000007A 7543                                jne next
+    77                                              
+    78                                              aici:
+    79                                              
+    80 0000007C 3B0D[2A000000]                      cmp ecx,[contor_c]
+    81 00000082 7525                                jne afisare
+    82                                              
+    83 00000084 60                                  pushad
+    84 00000085 68[96000000]                        push dword rez
+    85 0000008A 68[19000000]                        push dword formats
+    86 0000008F FF15[00000000]                      call [printf]
+    87 00000095 83C408                              add esp,8
+    88                                              
+    89 00000098 6A20                                push dword " "
+    90 0000009A 68[1C000000]                        push dword formatc
+    91 0000009F FF15[00000000]                      call [printf]
+    92 000000A5 83C408                              add esp,8
+    93 000000A8 61                                  popad
+    94                                              afisare:
+    95                                              
+    96                                              
+    97                                              ;mov edi,rez
+    98 000000A9 C705[2A000000]0000-                 mov dword[contor_c],0
+    98 000000B1 0000               
+    99 000000B3 C705[26000000]0000-                 mov dword[nr],0
+    99 000000BB 0000               
+   100 000000BD EBB0                                jmp repeta
+   101                                              
+   102                                              next:
+   103                                              
+   104 000000BF 3C0A                                cmp al,0Ah
+   105 000000C1 74B9                                je aici
+   106                                              
+   107 000000C3 8B1D[26000000]                      mov ebx,[nr]
+   108 000000C9 AA                                  stosb
+   109 000000CA 83F861                              cmp eax,"a"
+   110 000000CD 7506                                jne here1
+   111 000000CF FF05[26000000]                      inc dword [nr]
+   112                                              here1:
+   113 000000D5 83F865                              cmp eax,"e"
+   114 000000D8 7506                                jne here2
+   115 000000DA FF05[26000000]                      inc dword[nr]
+   116                                              here2:
+   117 000000E0 83F869                              cmp eax,"i"
+   118 000000E3 7506                                jne here3
+   119 000000E5 FF05[26000000]                      inc dword [nr]
+   120                                              here3:
+   121 000000EB 83F86F                              cmp eax,"o"
+   122 000000EE 7506                                jne here4
+   123 000000F0 FF05[26000000]                      inc dword [nr]
+   124                                              here4:
+   125 000000F6 83F875                              cmp eax,"u"
+   126 000000F9 7506                                jne here5
+   127 000000FB FF05[26000000]                      inc dword [nr]
+   128                                              here5:
+   129 00000101 3B1D[26000000]                      cmp ebx,[nr]
+   130 00000107 7506                                jne vocala
+   131 00000109 FF05[2A000000]                      inc dword[contor_c]
+   132                                              vocala:
+   133                                          
+   134 0000010F E95BFFFFFF                      jmp repeta
+   135                                          
+   136                                          
+   137                                          final:
+   138                                          
+   139                                          
+   140 00000114 6A00                            push    dword 0      
+   141 00000116 FF15[00000000]                  call    [exit]      

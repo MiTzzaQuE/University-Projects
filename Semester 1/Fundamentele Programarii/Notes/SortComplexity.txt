@@ -1,0 +1,22 @@
+SORTARI - complexitati timp/memorie
+
+Sortarea prin selectie: 
+timp : 0(n^2) (teta-o barat) - caz f. = caz def. = caz mediu
+memorie : 0(1) - functie in-place
+
+Sortarea prin insertie:
+timp : O(n^2) 
+memorie : 0(1) - functie in-place
+
+Sortarea prin metoda bulelor:
+timp : O(n^2)
+memorie : 0(1) - functie in-place
+
+Sortarea rapida (quick-sort):
+timp : 0(n*log2n)
+memorie : 0(1) - functie in-place
+
+Merge Sort:
+timp : 0(n*log2n)
+memorie : 0(n) - functie not-in-place / out-of-place
+

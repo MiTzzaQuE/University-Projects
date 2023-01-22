@@ -1,0 +1,31 @@
+bits 32 
+
+global start        
+
+extern exit               
+import exit msvcrt.dll    
+
+segment data use32 class=data
+    ; ...
+    sirS dd 44332211h, 88776655h, 87654321h, 12345678h ;
+    l equ ($-sirS)/4 ;lung = nr de  elemente
+    sirD times l db 0 ;rezervarea unui spatiu de lungime l pentru sirul destinatie  d si initializarea acestuia ; 33h, 77h, 65h, 34h
+
+segment code use32 class=code
+    start:
+        mov esi, sirS+4*l-1 ;pozitionarea pe ultimul dword al sirului, octetul de rang 3
+        mov edi, sirD+l-1
+        
+        mov ecx, l
+        jecxz Sfarsit
+        
+        ;varianta 1
+        repeta:
+            lodsb
+            lodsb
+            stosb
+            lodsw
+            loop repeta
+        Sfarsit:
+        push    dword 0    
+        call    [exit]     

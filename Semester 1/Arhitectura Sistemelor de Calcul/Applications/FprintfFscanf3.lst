@@ -1,0 +1,105 @@
+     1                                  ;27.Se da un fisier text. Fisierul contine numere (in baza 10) separate prin spatii. Sa se citeasca continutul acestui fisier, sa se determine minimul numerelor citite si sa se scrie rezultatul la sfarsitul fisierul
+     2                                  
+     3                                  bits 32 
+     4                                  
+     5                                  global start        
+     6                                  
+     7                                  extern exit, fopen, fprintf, fclose, fread
+     8                                  extern scanf
+     9                                  import scanf msvcrt.dll
+    10                                  extern printf
+    11                                  import printf msvcrt.dll
+    12                                  import exit msvcrt.dll
+    13                                  import fopen msvcrt.dll
+    14                                  import fprintf msvcrt.dll
+    15                                  import fclose msvcrt.dll
+    16                                  import fread msvcrt.dll
+    17                                  
+    18                                  segment data use32 class=data
+    19 00000000 66696C6532372E7478-         fisier db "file27.txt", 0       ; definim numele fisierului din care citim
+    19 00000009 7400               
+    20 0000000B 612B00                      acces_mode db "a+", 0           ; APPEND+, modul in care lucram cu fisierul
+    21 0000000E 00000000                    descriptor dd 0                 ; variabila in care vom salva descriptorul fisierului - necesar pentru a putea face referire la fisier
+    22 00000012 4E756D6172756C206D-         afisare db "Numarul minim din fisier este %d", 0;mesajul care trebuie afisat impreuna cu rezultatul
+    22 0000001B 696E696D2064696E20-
+    22 00000024 666973696572206573-
+    22 0000002D 746520256400       
+    23 00000033 FF000000                    minim dd 255                    ;definim o variabila in care retinem minimul 
+    24 00000037 00                          curent db 0                     ;definim o variabila in care retinem numarul curent
+    25 00000038 <res 00000064>              sir resb 100                    ;rezervam in memorie 100 byte-uri pentru sir
+    26                                      len equ 100                     ;definim o constanta cu valoarea 100/lungimea maxima a unui text citit
+    27 0000009C 0A                          ten db 10                       ;definim o variabila 10 cu care cream numere in baza 10
+    28                                      
+    29                                  segment code use32 class=code
+    30                                      start:
+    31 00000000 68[0B000000]                    push dword acces_mode       ;punem pe stiva adresa modului de acces cu care vrem sa lucram (append)
+    32 00000005 68[00000000]                    push dword fisier           ;se pune pe stiva adresa numelui fisierului
+    33 0000000A FF15[00000000]                  call [fopen]                ;apelarea functiei de deschidere a fisierului
+    34 00000010 83C408                          add esp, 4*2                ;eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 2 = nr de parametri
+    35                                          
+    36                                          ;  verificam daca functia fopen a creat cu succes fisierul (daca EAX != 0)
+    37 00000013 A3[0E000000]                    mov [descriptor], eax   ; salvam valoarea returnata de fopen in variabila descriptor_fis
+    38 00000018 83F800                          cmp eax, 0                  ; se compara valoarea din ecx cu 0
+    39 0000001B 0F8491000000                    je final                    ; daca e 0 sare la finalui programului
+    40                                          
+    41                                          
+    42                                          ; citim textul in fisierul deschis folosind functia fread
+    43                                          ; eax = fread(text, 1, len, descriptor_fis)
+    44 00000021 FF35[0E000000]                  push dword[descriptor]
+    45 00000027 6A64                            push dword len
+    46 00000029 6A01                            push dword 1
+    47 0000002B 68[38000000]                    push dword sir
+    48 00000030 FF15[00000000]                  call [fread]
+    49 00000036 83C410                          add esp, 4*4                ; dupa apelul functiei fread EAX contine numarul de caractere citite din fisier
+    50                                          
+    51 00000039 BE00000000                      mov esi, 0                  ;punem in esi adresa de inceput a sirului 
+    52 0000003E B964000000                      mov ecx, len                ;se pune in ecx lungimea sirului
+    53                                          
+    54 00000043 E36D                            jecxz final                 ;daca ecx = 0 se sare la final
+    55                                          
+    56                                          repeta:                     ;inceputul buclei
+    57 00000045 8A86[38000000]                      mov al, [sir+esi]       ;se pune in al valoarea curenta din sir
+    58 0000004B 3C20                                cmp al, ' '             ;se verifica daca e spatiu sau nu
+    59 0000004D 741D                                je sf
+    60 0000004F 3C00                                cmp al, 0               ;conditie de iesire din bucla
+    61 00000051 7437                                je sf4
+    62 00000053 88C3                                mov bl, al              ;retinem in al adresa elementului curent
+    63 00000055 80EB30                              sub bl, '0'             ;convertim din caracter in cifra
+    64 00000058 A0[37000000]                        mov al, [curent]        ;in al se pune valoarea numarului curent pentru a-l putea inmulti
+    65 0000005D F625[9C000000]                      mul byte[ten]           ;se inmulteste cu 10/cream un numar nou
+    66 00000063 00D8                                add al, bl              ;adunam la rezultat cifra curenta 
+    67 00000065 A2[37000000]                        mov [curent], al        ;se pune in variabila curent rezultatul obtinut
+    68 0000006A EB1B                                jmp sf2                 ;sare la eticheta sf2
+    69                                              
+    70                                              sf:
+    71 0000006C 8A1D[37000000]                      mov bl, [curent]        ;in bl este pus numarul curent/creat
+    72 00000072 C605[37000000]00                    mov byte[curent], 0     ;se reinitializeaza variabila curent
+    73 00000079 381D[33000000]                      cmp [minim], bl         ;compara numarul curent/creat cu minimul existent
+    74 0000007F 7206                                jb sf2                  ;daca nu mai mic decat minimul sare la eticheta sf2
+    75 00000081 881D[33000000]                      mov [minim], bl         ;altfel actualizam minimul
+    76                                              
+    77                                              sf2:
+    78 00000087 46                                  inc esi                 ;incrementam registrul esi pentru a trece la urmatorul element/byte din sir
+    79 00000088 E2BB                            loop repeta                 ;repetarea buclei
+    80                                          sf4:                         ;eticheta de iesire din bucla
+    81 0000008A 8A1D[37000000]                  mov bl, [curent]            ;verificarea cazului special in care ultimul numar poate fi mai mic decat minimul
+    82 00000090 381D[33000000]                  cmp [minim], bl
+    83 00000096 7206                            jb sf3    
+    84 00000098 881D[33000000]                  mov [minim], bl
+    85                                          sf3:
+    86                                          
+    87 0000009E FF35[33000000]                  push dword [minim]          ;punem pe stiva valoarea variabilei minim
+    88                                          ;push dword [descriptor]
+    89 000000A4 68[12000000]                    push dword afisare          ;punem pe stiva adresa textului pentru afisare
+    90 000000A9 FF15[00000000]                  call [printf]               ;se apeleaza functia de afisare pe ecran
+    91 000000AF 83C408                          add esp, 4*2                ;eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 2 = nr de parametri
+    92                                          
+    93                                          ;push dword [descriptor]
+    94                                          ;call [fclose]
+    95                                          ;add esp, 4
+    96                                          
+    97                                          final:
+    98                                          
+    99                                          ; exit(0)
+   100 000000B2 6A00                            push    dword 0             ; push the parameter for exit onto the stack
+   101 000000B4 FF15[00000000]                  call    [exit]              ; call exit to terminate the program

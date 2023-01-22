@@ -1,0 +1,101 @@
+bits 32 ; assembling for the 32 bits architecture
+
+; declare the EntryPoint (a label defining the very first instruction of the program)
+global start        
+
+; declare external functions needed by our program
+extern exit , scanf, printf, fprintf, fopen              ; tell nasm that exit exists even if we won't be defining it
+import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+import scanf msvcrt.dll                          ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+import printf msvcrt.dll
+import fprintf msvcrt.dll
+import fopen msvcrt.dll
+
+; our data is declared here (the variables needed by our program)
+segment data use32 class=data
+    ; ...
+    fisier db "cacamacaee.txt", 0
+    
+    accesmode db "w+", 0
+    
+    descriptor dd -1
+    
+    curent dd 0
+    format db "%c", 0
+    format1 db "Numarul minim este %d%d%d", 0
+    
+    min1 dd -1
+    min2 dd -1
+    min3 dd -1
+    
+    
+    
+; our code starts here
+segment code use32 class=code
+    start:
+        ; ...
+        
+         
+        
+        
+        citire:
+            push dword curent
+            push dword format
+            call [scanf]
+            add esp, 8
+            
+            mov eax, [curent]
+        
+            cmp eax, "!"
+            je final
+           
+            
+            sub eax, "0"
+            
+            test eax, 01h
+            jz citire
+            
+            cmp eax, dword[min1]
+            jae minim2
+            
+            mov dword[min1], eax
+            jmp citire
+            
+            minim2:
+            
+            cmp eax, dword[min2]
+            jae minim3
+            
+            mov dword[min2], eax
+            jmp citire
+            
+            minim3:
+            
+            cmp eax, dword[min3]   
+            jae citire
+            
+            mov dword[min3], eax
+            jmp citire
+            
+        
+        final:
+        push dword accesmode
+        push dword fisier
+        call [fopen]
+        add esp, 8
+        
+        mov [descriptor], eax
+        
+        
+        
+        push dword[min3]
+        push dword[min2]
+        push dword[min1]
+        push dword format1
+        push dword [descriptor]
+        call [fprintf]
+        add esp, 4*5
+        
+        ; exit(0)
+        push    dword 0      ; push the parameter for exit onto the stack
+        call    [exit]       ; call exit to terminate the program

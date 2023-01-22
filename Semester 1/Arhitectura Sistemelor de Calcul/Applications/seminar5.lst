@@ -1,0 +1,35 @@
+     1                                  bits 32
+     2                                  global start        
+     3                                  
+     4                                  ; declararea functiilor externe folosite de program
+     5                                  extern exit, printf, scanf  ; adaugam printf si scanf ca functii externe           
+     6                                  import exit msvcrt.dll     
+     7                                  import printf msvcrt.dll     ; indicam asamblorului ca functia printf se gaseste in libraria msvcrt.dll
+     8                                  import scanf msvcrt.dll      ; similar pentru scanf
+     9                                                            
+    10                                  segment  data use32 class=data
+    11 00000000 1A000000                    a dd 26 
+    12 00000004 4E6F69656D62726965-         b db "Noiembrie", 0
+    12 0000000D 00                 
+    13 0000000E E4070000                    c dd 2020 
+    14 00000012 41534300                    d db "ASC",0
+    15 00000016 53756E74656D20696E-         text  db "Suntem in %d %s %d si avem seminar de %s", 0 
+    15 0000001F 202564202573202564-
+    15 00000028 207369206176656D20-
+    15 00000031 73656D696E61722064-
+    15 0000003A 6520257300         
+    16                                      
+    17                                  segment  code use32 class=code
+    18                                      start:
+    19                                       
+    20 00000000 68[12000000]                    push dword d 
+    21 00000005 FF35[0E000000]                  push dword [c] 
+    22 0000000B 68[04000000]                    push dword b 
+    23 00000010 FF35[00000000]                  push dword [a]
+    24 00000016 68[16000000]                    push dword text
+    25 0000001B FF15[00000000]                  call [printf] 
+    26 00000021 83C414                          add esp, 4*5 
+    27                                          
+    28                                          ; exit(0)
+    29 00000024 6A00                            push  dword 0       
+    30 00000026 FF15[00000000]                  call  [exit]        

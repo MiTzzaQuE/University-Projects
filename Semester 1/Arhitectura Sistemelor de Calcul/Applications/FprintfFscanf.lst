@@ -1,0 +1,109 @@
+     1                                  ;4.Se da un fisier text. Sa se citeasca continutul fisierului, sa se contorizeze numarul de cifre impare si sa se afiseze aceasta valoare. Numele fisierului text este definit in segmentul de date.
+     2                                  
+     3                                  bits 32
+     4                                  
+     5                                  global start
+     6                                  
+     7                                  extern exit, fopen, fprintf, fclose, fread
+     8                                  extern scanf
+     9                                  import scanf msvcrt.dll
+    10                                  extern printf
+    11                                  import printf msvcrt.dll
+    12                                  import exit msvcrt.dll  
+    13                                  import fopen msvcrt.dll  
+    14                                  import fprintf msvcrt.dll
+    15                                  import fclose msvcrt.dll
+    16                                  import fread msvcrt.dll
+    17                                  
+    18                                  segment data use32 class=data                     
+    19 00000000 6C6162382E74787400         nume_fisier db "lab8.txt",0  ; definim numele fisierului din care citim
+    20 00000009 7200                       mod_acces db "r",0           ; READ, daca fisierul nu exista se va crea
+    21 0000000B FFFFFFFF                   descriptor_fis dd -1         ; variabila in care vom salva descriptorul fisierului - necesar pentru a putea face referire la fisier
+    22 0000000F 4E756D6172756C2064-        mesaj db "Numarul de cifre impare din fisier este: %d",0;mesajul care trebuie afisat impreuna cu rezultatul
+    22 00000018 652063696672652069-
+    22 00000021 6D706172652064696E-
+    22 0000002A 206669736965722065-
+    22 00000033 7374653A20256400   
+    23                                     len equ 100                  ; definirea unei constante care reprezinta lungimea maxima a sirului
+    24 0000003B 00<rept>                   text times len+1 db 0        ; alocarea in memorie a unui numar 'len+1' de 0-uri
+    25 000000A0 00000000                   numarCaractere dd 0          ; contor in care retinem lungimea sirului
+    26 000000A4 0A0D6E756D6172756C-        mesaj2 db 10,13,"numarul de caractere este: %d",0;mesaj pentru numarul de caractere
+    26 000000AD 206465206361726163-
+    26 000000B6 746572652065737465-
+    26 000000BF 3A20256400         
+    27 000000C4 0A0D6E756D6172756C-        mesaj3 db 10,13,"numarul de cifre impare din fisier este: %d",0;mesaj pentru numarul cifrelor pare din fisier
+    27 000000CD 206465206369667265-
+    27 000000D6 20696D706172652064-
+    27 000000DF 696E20666973696572-
+    27 000000E8 20657374653A202564-
+    27 000000F1 00                 
+    28 000000F2 00000000                   contor dd 0                  ; contor care retine cate cifre impare exista in text
+    29                                  segment code use32 class=code
+    30                                      start:
+    31 00000000 68[09000000]                push dword mod_acces        ;punem pe stiva adresa modului de acces cu care vrem sa lucram (read)
+    32 00000005 68[00000000]                push dword nume_fisier      ;se pune pe stiva adresa numelui fisierului
+    33 0000000A FF15[00000000]              call [fopen]                ;apelarea functiei de deschidere a fisierului
+    34 00000010 83C408                      add esp,4*2                 ;eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 2 = nr de parametri
+    35                                        
+    36                                      ;  verificam daca functia fopen a creat cu succes fisierul (daca EAX != 0)
+    37 00000013 A3[0B000000]                mov [descriptor_fis], eax   ; salvam valoarea returnata de fopen in variabila descriptor_fis
+    38 00000018 83F800                      cmp eax, 0                  ; se compara valoarea din ecx cu 0
+    39 0000001B 0F848D000000                je final                    ; daca e 0 sare la finalui programului
+    40                                      
+    41                                      repeta:                     ;eticheta de inceput
+    42                                          ; citim textul in fisierul deschis folosind functia fread
+    43                                          ; eax = fread(text, 1, len, descriptor_fis)
+    44 00000021 FF35[0B000000]                  push dword[descriptor_fis]
+    45 00000027 6A64                            push dword len
+    46 00000029 6A01                            push dword 1
+    47 0000002B 68[3B000000]                    push dword text
+    48 00000030 FF15[00000000]                  call [fread]
+    49 00000036 83C410                          add esp, 4*4            ; dupa apelul functiei fread EAX contine numarul de caractere citite din fisier
+    50                                          
+    51 00000039 83F800                          cmp eax,0               ;daca nu s-a citit nimic se sare la final
+    52 0000003C 7408                            je gata
+    53 0000003E 0105[A0000000]                  add [numarCaractere],eax;in variabila numarCaractere retinem lungimea textului citit
+    54                                          
+    55 00000044 EBDB                        jmp repeta                  ;saltul la eticheta repeta
+    56                                          
+    57                                      gata:                       ;iesirea din functia de citire
+    58                                      
+    59 00000046 68[3B000000]                push dword text             ;se pune pe stiva adresa textului citit
+    60 0000004B FF15[00000000]              call [printf]               ;apelarea functiei de afisare pe ecran
+    61 00000051 83C404                      add esp, 4*1                ; eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 1 = nr de parametri
+    62                                          
+    63 00000054 FF35[A0000000]              push dword[numarCaractere]  ;se pune pe stiva, iar apoi afisata pe ecran valoarea in care retinem lungimea textului citit
+    64 0000005A 68[A4000000]                push dword mesaj2
+    65 0000005F FF15[00000000]              call [printf]
+    66 00000065 83C408                      add esp, 4*2
+    67                                      
+    68 00000068 BE[3B000000]                mov esi, text               ;punem in registrul esi adresa textului citit
+    69 0000006D 8B0D[A0000000]              mov ecx, dword[numarCaractere];punem in ecx lungimea textului
+    70 00000073 E339                        jecxz final                 ;daca lungimea este 0 se sare la final
+    71                                      
+    72                                      repeta1:                    ;parcurgerea textului
+    73 00000075 AC                              lodsb                   ;se incarca in memorie/al un byte
+    74 00000076 3C30                            cmp al,'0'              ;se verifica daca e cifra
+    75 00000078 7C0F                            jl next
+    76 0000007A 3C39                            cmp al,'9'
+    77 0000007C 7F0B                            jg next
+    78 0000007E A801                            test al,01h             ;se verifica paritatea cifrei
+    79 00000080 7407                            je next ;               !!!!!!!!!!! vream explicatii
+    80 00000082 8305[F2000000]01                add dword[contor],1     ;daca e impar crestem valoarea contorului cu 1
+    81                                          
+    82                                          next:                   ;eticheta la care se sare daca caracterul incarcat in memorie nu e cifra
+    83 00000089 E2EA                            loop repeta1            ;repetarea buclei
+    84                                                  
+    85 0000008B FF35[F2000000]              push dword[contor]          ;se pune pe stiva valoarea contorului
+    86 00000091 68[C4000000]                push dword mesaj3           ;se pune pe stiva adresa mesajului 3 pentru afisare
+    87 00000096 FF15[00000000]              call [printf]               ;se apeleaza functia de afisare pe ecran
+    88 0000009C 83C408                      add esp, 4*2                ;eliberam parametrii de pe stiva; 4 = dimensiunea unui dword; 2 = nr de parametri
+    89                                          
+    90 0000009F FF35[0B000000]              push dword [descriptor_fis] ;punem pe stiva valoare descriptorului pentru a putea inchide fisierul
+    91 000000A5 FF15[00000000]              call [fclose]
+    92 000000AB 83C404                      add esp, 4
+    93                                              
+    94                                      final:                      ;eticheta la care se sare in caz in care fisierul este gol
+    95                                       
+    96 000000AE 6A00                        push  dword 0               ; punem pe stiva parametrul pentru exit
+    97 000000B0 FF15[00000000]              call  [exit]                ; apelam exit pentru a incheia programul

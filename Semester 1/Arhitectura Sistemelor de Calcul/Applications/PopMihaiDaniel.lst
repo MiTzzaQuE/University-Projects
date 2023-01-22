@@ -1,0 +1,121 @@
+     1                                  bits 32 
+     2                                  global start        
+     3                                  
+     4                                  extern exit , scanf, printf, fprintf, fopen ,fread ,fclose            
+     5                                  import exit msvcrt.dll    
+     6                                  import scanf msvcrt.dll                        
+     7                                  import printf msvcrt.dll
+     8                                  import fprintf msvcrt.dll
+     9                                  import fopen msvcrt.dll
+    10                                  import fread msvcrt.dll
+    11                                  import fclose msvcrt.dll
+    12                                  segment data use32 class=data
+    13 00000000 6E756D6572655F6567-         fisier db "numere_egale.txt", 0
+    13 00000009 616C652E74787400   
+    14 00000011 7200                        accesmode db "r", 0
+    15 00000013 FFFFFFFF                    descriptor dd -1
+    16                                      
+    17 00000017 257300                      formats db "%s",0
+    18 0000001A 256300                      formatc db "%c",0
+    19 0000001D 00000000                    ok dd 0
+    20 00000021 00000000                    contor dd 0
+    21 00000025 00<rept>                    sir times 100 db 0
+    22 00000089 00<rept>                    rez times 100 db 0
+    23                                      
+    24                                      
+    25                                  segment code use32 class=code
+    26                                      start:
+    27                                          ;deschidem fisierul din care se citesc numerele
+    28 00000000 68[11000000]                    push dword accesmode
+    29 00000005 68[00000000]                    push dword fisier
+    30 0000000A FF15[00000000]                  call [fopen]
+    31 00000010 83C408                          add esp,8
+    32                                          ;conditie de iesire daca nu s-a deschis bine fisierul
+    33 00000013 A3[13000000]                    mov [descriptor],eax
+    34 00000018 83F800                          cmp eax,0
+    35 0000001B 0F84A8000000                    je final
+    36                                          ;citirea numerelor din fisier
+    37 00000021 FF35[13000000]                  push dword [descriptor]
+    38 00000027 6A64                            push dword 100
+    39 00000029 6A01                            push dword 1
+    40 0000002B 68[25000000]                    push dword sir
+    41 00000030 FF15[00000000]                  call [fread]
+    42 00000036 83C410                          add esp,4*4
+    43                                          
+    44                                          ;push dword sir
+    45                                          ;push dword formats
+    46                                          ;call [printf]
+    47                                          ;add esp,8
+    48                                          
+    49 00000039 BE[25000000]                    mov esi,sir
+    50                                          ;mov edi,rez
+    51                                          ;parcurgera sirul de numere citit
+    52                                          repeta:
+    53 0000003E AC                                  lodsb
+    54                                              ;cu ajutorul variabilei ok retinem prima cifra din numar
+    55 0000003F 833D[1D000000]00                    cmp dword[ok],0
+    56 00000046 750C                                jne next
+    57 00000048 88C3                                mov bl,al           ;in bl se retine prima cifra din nr
+    58 0000004A C705[1D000000]0100-                 mov dword[ok],1
+    58 00000052 0000               
+    59                                              next:
+    60                                              ;daca am ajuns la final se verifica si ultimul nr daca e bun
+    61 00000054 3C00                                cmp al,""
+    62 00000056 7404                                je afisare
+    63                                              ;cand ajungem la caracterul # verificam daca nr are prima si ultima cifra egale
+    64 00000058 3C23                                cmp al,"#"
+    65 0000005A 755E                                jne next2
+    66                                              
+    67                                              afisare:
+    68 0000005C B800000000                          mov eax,0
+    69 00000061 C705[1D000000]0000-                 mov dword[ok],0
+    69 00000069 0000               
+    70 0000006B 4E                                  dec esi
+    71 0000006C 4E                                  dec esi
+    72 0000006D AC                                  lodsb
+    73 0000006E 38D8                                cmp al,bl
+    74 00000070 753D                                jne next3
+    75 00000072 2B35[21000000]                      sub esi,[contor]
+    76 00000078 8B0D[21000000]                      mov ecx,[contor]
+    77                                              repeta2:            ;parcurgerea numarului inca o data pentru afisare daca este bun
+    78 0000007E 50                                      push eax
+    79 0000007F 51                                      push ecx
+    80 00000080 B800000000                              mov eax,0
+    81 00000085 AC                                      lodsb
+    82 00000086 3C23                                    cmp al,"#"
+    83 00000088 740F                                    je nu
+    84 0000008A 50                                      push eax
+    85 0000008B 68[1A000000]                            push dword formatc
+    86 00000090 FF15[00000000]                          call [printf]
+    87 00000096 83C408                                  add esp,8
+    88                                                  nu:
+    89 00000099 59                                      pop ecx
+    90 0000009A 58                                      pop eax
+    91 0000009B E2E1                                loop repeta2
+    92                                              ;afisare spatiu intre numere
+    93 0000009D 60                                  pushad
+    94 0000009E 6A20                                push dword " "
+    95 000000A0 68[1A000000]                        push dword formatc
+    96 000000A5 FF15[00000000]                      call [printf]
+    97 000000AB 83C408                              add esp,8
+    98 000000AE 61                                  popad
+    99                                              ;resetarea variabilelor
+   100                                              next3:
+   101 000000AF 46                                  inc esi
+   102 000000B0 C705[21000000]0000-                 mov dword[contor],0
+   102 000000B8 0000               
+   103                                              next2:
+   104                                              ;numarul de cifre a unui numar
+   105 000000BA FF05[21000000]                      inc dword[contor]
+   106                                              ;conditie de oprire
+   107 000000C0 3C00                                cmp al,""
+   108 000000C2 7405                                je final
+   109 000000C4 E975FFFFFF                      jmp repeta
+   110                                          
+   111                                          final:
+   112                                          ;inchidea fisierului
+   113 000000C9 FF35[13000000]                  push dword[descriptor]
+   114 000000CF FF15[00000000]                  call [fclose]
+   115 000000D5 83C404                          add esp,4
+   116 000000D8 6A00                            push    dword 0      
+   117 000000DA FF15[00000000]                  call    [exit]      

@@ -1,0 +1,18 @@
+sir = [1,2,3,1,4,2,1,2,3,4]
+       0,1,2,3,4,5,6,7,8,9
+
+contor = 1
+poz_curenta = 0
+subsir_maxim = 0
+
+for(i=1;i<len(sir);i++)
+	if(sir[i-1]<sir[i])
+		contor++;
+	else
+		if(contor>subsir_maxim) subsir_maxim = contor
+			poz_curenta = i-contor
+			contor = 1
+
+if(contor>subsir_maxim) subsir_maxim = contor
+			poz_curenta = i-contor
+				

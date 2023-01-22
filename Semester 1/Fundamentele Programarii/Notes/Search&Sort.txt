@@ -1,0 +1,171 @@
+def searchSeq(el,l):          -CAUTARE SECVENTIALA
+ """
+ Search for an element in a list
+ el - element
+ l - list of elements
+ return the position of the element
+ or -1 if the element is not in l
+ """
+ poz = -1
+ for i in range(0,len(l)):
+ 	if el==l[i]:
+ 		poz = i
+ return poz
+
+
+def searchSucc(el,l):         -secventiala succesiva
+ """
+ Search for an element in a list
+ el - element
+ l - list of elements
+ return the position of first occurrence
+ or -1 if the element is not in l
+ """
+ i = 0
+ while i<len(l) and el!=l[i]:
+ 	i=i+1
+ if i<len(l):
+ 	return i
+ return -1
+
+
+def searchSeq(el,l):         -CAUTARE SECVENTIALA -CHEI ORDONATE
+ """
+ Search for an element in a list
+ el - element
+ l - list of ordered elements
+ return the position of first occurrence
+ or the position where the element
+ can be inserted
+ """
+ if len(l)==0:
+ 	return 0
+ poz = -1
+ for i in range(0,len(l)):
+ 	if el<=l[i]:
+ 		poz = i
+ if poz==-1:
+ 	return len(l)
+ return poz
+
+
+def binaryS(el, l, left, right):          -CAUTARE BINARA
+ """
+ Search an element in a list
+ el - element to be searched; l - a list of ordered elements
+ left,right the sublist in which we search
+ return the position of first occurrence or the insert position
+ """
+ if left>=right-1:
+ 	return right
+ m = (left+right)/2
+ if el<=l[m]:
+ 	return binaryS(el, l, left, m)
+ else:
+ 	return binaryS(el, l, m, right)
+
+
+
+def selectionSort(l):                -SORTARE PRIN SELECTIE
+ """ 
+ sort the element of the list
+ l - list of element
+ return the ordered list (l[0]<l[1]<...)
+ """
+ for i in range(0,len(l)-1):
+ 	ind = i
+ #find the smallest element in the rest of the list
+ 	for j in range(i+1,len(l)):
+ 		if (l[j]<l[ind]):
+ 			ind =j
+ 	if (i<ind):
+ #interchange
+ 		aux = l[i]
+ 		l[i] = l[ind]
+ 		l[ind] = aux
+
+
+def directSelectionSort(l):            -SORTARE PRIN SELECTIE DIRECTA
+ """
+ sort the element of the list
+ l - list of element
+ return the ordered list (l[0]<l[1]<...)
+ """
+ for i in range(0,len(l)-1):
+ #select the smallest element
+ 	for j in range(i+1,len(l)):
+ 		if l[j]<l[i]:
+ 			l[i],l[j] = l[j],l[i]
+
+
+
+def insertSort(l):                    -SORTARE PRIN INSERTIE
+ """
+ sort the element of the list
+ l - list of element
+ return the ordered list (l[0]<l[1]<...)
+ """
+ for i in range(1,len(l)):
+ 	ind = i-1
+ 	a = l[i]
+ #insert a in the right position
+ 	while ind>=0 and a<l[ind]:
+ 		l[ind+1] = l[ind]
+ 		ind = ind-1
+ 	l[ind+1] = a
+
+
+
+
+def bubbleSort2(l):                 -BUBBLE SORT
+ for j in range(1,len(l)):
+ 	for i in range(len(l)-j):
+ 		if l[i+1]<l[i]:
+ 			l[i], l[i + 1] = l[i + 1], l[i]
+
+
+
+def quickSort(list):                  -QUICK SORT PYTHON
+ """
+ Quicksort using list comprehensions
+ return a new list
+ """
+ if len(list) <= 1:
+ 	return list
+ pivot = list.pop()
+ lesser = quickSort([x for x in list if x < pivot])
+ greater = quickSort([x for x in list if x >= pivot])
+ return lesser + [pivot] + greater
+
+
+def merge(aux1,aux2):         	-MERGE SORT
+    i = 0
+    j = 0 
+    aux3 = []
+    while i<len(aux1) and  j<len(aux2):
+        if aux1[i]<aux2[j]:
+            aux3.append(aux1[i])
+            i += 1
+        else:
+            aux3.append(aux2[j])
+            j += 1
+    while i<len(aux1):
+        aux3.append(aux1[i])
+        i += 1
+    while j<len(aux2):
+        aux3.append(aux2[j])
+        j += 1
+
+    return aux3
+
+def mergeSort(l):
+    if len(l) == 1:
+        return l
+
+    mid = len(l) // 2
+    aux1 = mergeSort(l[:mid])
+    aux2 = mergeSort(l[mid:])
+
+    return merge(aux1,aux2)
+
+

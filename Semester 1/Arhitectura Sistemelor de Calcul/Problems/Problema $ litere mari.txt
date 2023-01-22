@@ -1,0 +1,103 @@
+bits 32
+global start
+
+extern exit, fopen, fprintf, fclose
+extern scanf
+import scanf msvcrt.dll
+extern printf
+import printf msvcrt.dll
+import exit msvcrt.dll  
+import fopen msvcrt.dll  
+import fprintf msvcrt.dll
+import fclose msvcrt.dll
+    ;Se da un nume de fisier (definit in segmentul de date). Sa se creeze un fisier cu numele dat, apoi sa se citeasca ;de la tastatura cuvinte pana cand se citeste de la tastatura caracterul '$'. Sa se scrie in fisier doar cuvintele ;care contin cel putin o litera mare (uppercase).
+segment data use32 class=data
+   sir db 0
+   nume_fisier db "lab8.txt",0
+   mod_acces db "w",0;WRITE,daca fisierul nu exista se va crea
+   descriptor_fis dd -1; variabila in care vom salva descriptorul fisierului - necesar pentru a putea face referire la fisier
+   text db 10,13,"da cuvant ",0
+   spatiu db 10,13,0
+   citirecuv db "%s"
+   len dd 0
+segment code use32 class=code
+    start:
+      push dword mod_acces
+      push dword nume_fisier
+      call [fopen]
+      add esp,4*2
+      
+      ;  verificam daca functia fopen a creat cu succes fisierul (daca EAX != 0)
+      mov [descriptor_fis], eax
+      cmp eax, 0
+        je final
+
+        
+        repeta:
+            push text;afisam text
+            call [printf]
+            add esp,4
+            ;citim cuvant tastatura
+            push dword sir
+            push dword citirecuv
+            call [scanf]
+            add esp, 4*2 
+        
+            push sir; afisam consola cuvantul
+            call [printf]
+            add esp,4
+            mov esi,sir
+           
+            ;mov ecx,len
+            cautadolari:; verificam daca se gaseste caracterul $ in cuvantul citit
+            lodsb
+            cmp al,"$"
+            je stop
+            cmp al,""
+            je cauta_upper
+            jmp cautadolari
+            
+            cauta_upper:
+            ;mov ebx,0
+            mov esi,sir
+            find_uppercase:; verificam daca contine uppercase cuvantu
+            lodsb
+            cmp al,"A"
+            jl next
+            cmp al,"Z"
+            jg next
+            jmp afisare
+            next:
+            cmp al,""
+            je nextcuv
+            jmp find_uppercase
+
+            
+            afisare:; afisare cuvant daca am uppercase
+            push dword sir
+           
+            push dword [descriptor_fis]
+            call [fprintf]
+            add esp, 4*2
+            
+            push dword spatiu
+            push dword [descriptor_fis]
+            call [fprintf]
+            add esp,4*2
+            
+        nextcuv:
+        jmp repeta
+        stop:
+        
+        push dword [descriptor_fis]
+        call [fclose]
+        add esp, 4
+        
+      final:
+      
+      
+      
+      
+      
+        push    dword 0     
+        call    [exit]      

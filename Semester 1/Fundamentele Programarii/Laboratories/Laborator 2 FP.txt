@@ -1,0 +1,304 @@
+Probleme tema seminar 1
+
+1.
+a = int(input())
+var = 0
+while var == 0:
+    a = a + 1
+    var = 1
+    for i in range (2, a-1):
+        if a % i == 0:
+            var=0
+            i=a
+print (a)
+
+2.
+from datetime import date
+
+today = date.today()
+age=0
+l=[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+bd = int(input())
+bm = int(input())
+bY = int(input())
+
+td = int(today.strftime("%d"))
+tm = int(today.strftime("%m"))
+tY = int(today.strftime("%Y"))
+
+def bisect(y):
+    if y%400 == 0:
+        return 1
+    elif y%4 == 0 and y%100 != 0:
+        return 1
+    else:
+        return 0
+
+if bisect(bY):
+    l[1]=29
+for k in range (bm, 11):
+    age = age + l[k]
+age = age + l[bm-1]-bd + 1
+
+
+for i in range (bY+1, tY):
+    if bisect(i) == 0:
+        age = age + 365
+    else:
+        age = age + 366
+
+if bisect(tY):
+    l[1]=29
+else:
+    l[1]=28
+for j in range(0, tm):
+    age = age + l[j]
+age = age + td
+
+print(age)
+
+3.
+an = int(input())
+nrordine = int(input())
+bisect=0
+l=[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+if an % 400 == 0:
+    bisect = 1
+
+elif an % 4 == 0 and an % 100 !=0:
+    bisect = 1
+
+if bisect == 1:
+    l[1]=29
+
+i=0;
+luna=0;
+while(nrordine>0):
+    nrordine = nrordine - l[i]
+    luna = luna + 1
+    i = i + 1
+zi = l[i-1] + nrordine
+print(zi, luna, an)
+
+4.
+def prim(p):
+    for d in range (2, p):
+        if p%d == 0:
+            return 0
+    return 1
+def nextprim(m):
+    m = m + 1
+    while prim(m) == 0:
+        m = m + 1
+    return m
+n = int(input())
+p1 = 2
+while prim(n-p1) == 0:
+    if nextprim(p1) < n:
+        p1 = nextprim(p1)
+    else:
+        break
+if nextprim(p1)>=n:
+    print("Nu exista p1 si p2")
+else:
+    print("p1 = ", p1, "p2 = ", n-p1)
+    
+5.
+def prim(p):
+    for d in range (2, p):
+        if p%d == 0:
+            return 0
+    return 1
+a = int(input())
+a = a + 1
+while prim(a) == 0 and prim(a+2)== 0:
+    a = a + 1
+print (a, "and", a+2)
+
+6.
+n = int(input())
+a = 1
+b = 1
+while b <= n:
+    c = b
+    b = a + b
+    a = c
+print(b)
+
+7.
+def prim(p):
+    for d in range (2, p):
+        if p%d == 0:
+            return 0
+    return 1
+n = int(input())
+p = 1
+for i in range(2, n):
+    if prim(i) == 1 and n % i == 0:
+        p = p*i
+print(p)
+
+
+8.
+n = int(input())
+l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+m=0
+
+while n != 0:
+    c = int(n%10)
+    l[c] = l[c] + 1
+    n = n/10
+
+for i in reversed(range(1, 10)):
+    while l[i] != 0:
+        m = m*10 + i
+        l[i] = l[i] - 1
+
+print (m)
+
+
+
+9.
+n = int(input())
+m = 0
+while n != 0:
+    m = m*10 + n%10
+    n = n//10 
+print (m)
+
+
+10.
+n = int(input())
+l = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+m=0
+
+while n != 0:
+    c = int(n%10)
+    l[c] = l[c] + 1
+    n = n/10
+
+for i in range(1, 10):
+    while l[i] != 0:
+        m = m*10 + i
+        l[i] = l[i] - 1
+
+print (m)
+
+11.
+nr1 = int(input())
+nr2 = int(input())
+cif = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+P=1
+while nr1 != 0:
+    c = int(nr1 % 10)
+    cif[c] = 1
+    nr1 = nr1//10
+print(cif)
+
+while nr2 != 0:
+    c = int(nr2 % 10)
+    nr2 = nr2//10
+    if cif[c] == 0:
+        P = 0
+        nr2 = 0
+
+if P == 1:
+    print("Da")
+
+else:
+    print("Nu")
+ 
+12.
+poz = int(input())
+if poz < 4:
+    print (poz)
+else:
+    poz = poz - 3
+    i = 4
+    while poz !=0:
+        nr = i
+        for d in range(2, nr+1):
+            if nr % d == 0:
+                poz = poz - 1
+                if poz == 0:
+                    print (d)
+                else:
+                    while nr % d == 0:
+                        nr = nr // d
+        i = i + 1
+        
+
+    
+13.
+def prim(p):
+    for d in range (2, p):
+        if p%d == 0:
+            return 0
+    return 1
+poz = int(input())
+if poz < 4:
+    print (poz)
+else:
+    poz = poz - 3
+    i = 4
+    while poz > 0:
+        if prim(i) == 1:
+            poz = poz-1
+            if poz == 0:
+                print (i)
+        else:
+            nr=i
+            for d in range(2, nr+1):
+                if nr % d == 0:
+                    poz = poz - d
+                    if poz <= 0:
+                        print (d)
+                        break
+                    else:
+                        while nr % d == 0:
+                            nr = nr // d
+        i = i + 1
+
+14.
+n = int(input())
+suma=0
+while suma == 0:
+    n = n+1
+    for i in range(1, n):
+        if n%i == 0:
+            suma = suma + i
+    if n != suma:
+        suma = 0
+print(n)
+   
+
+15.
+a = int(input())
+prim = 0
+if a<3:
+    print("Nu exista")
+else:
+    while prim == 0:
+        prim = 1
+        a = a - 1
+        for i in range(2, a):
+            if a % i == 0:
+                prim = 0
+                break
+    print(a)
+
+16.
+n = int(input())
+suma=0
+while suma == 0:
+    n = n-1
+    for i in range(1, n):
+        if n%i == 0:
+            suma = suma + i
+    if n != suma:
+        suma = 0
+print(n)
+ 
+

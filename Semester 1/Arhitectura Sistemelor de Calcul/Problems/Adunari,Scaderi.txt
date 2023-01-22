@@ -1,0 +1,42 @@
+; Adunari si scaderi in interpretare fara semn
+; ; a - byte, b - word, c - double word, d - qword
+; Ex. 27: (a+c)-(d+b) 
+; ex.1 : a=125, b=2, c=225, d=200; Rezultat:(125+225)-(200+2) = 350-202 = 148
+ 
+bits 32 
+global  start
+extern  exit 
+import  exit msvcrt.dll
+
+segment  data use32 class=data 
+	a db 125
+	b dw 2
+	c dd 225
+	d dq 200
+
+
+segment  code use32 class=code ; segmentul de cod
+start: 	
+    mov eax, 0 ;eax = 0
+    mov al, [a] ;eax = a = 125
+    add eax, [c] ;eax = eax+c = (a+c) = 125+225 = 350
+    push eax ;punem in stiva rezultatul, eliberand registrul
+    
+    mov ebx, dword [d]
+    mov ecx, dword [d+4] ;ecx:ebx = d = 200
+    mov eax, 0 ;eax = 0
+    mov ax, [b] ;eax = b = 2
+    mov edx, 0 ;edx = 0
+    ;edx:eax = b = 2
+    add eax, ebx
+    adc edx, ecx
+    ;edx:eax = d+b = 200+2 = 202
+    
+    mov ecx, 0 ;ecx = 0
+    pop ebx ;ebx = 350
+    sub ebx, eax
+    sbb ecx, edx
+    ;ecx:ebx = (a+c)-(d+b) = 350-202 = 148
+    
+	push dword 0 
+	call [exit] 

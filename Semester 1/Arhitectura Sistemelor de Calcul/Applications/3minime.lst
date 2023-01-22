@@ -1,0 +1,82 @@
+     1                                  bits 32 
+     2                                  global start        
+     3                                  extern exit , scanf, printf, fprintf, fopen        
+     4                                  import exit msvcrt.dll    
+     5                                  import scanf msvcrt.dll                          
+     6                                  import printf msvcrt.dll
+     7                                  import fprintf msvcrt.dll
+     8                                  import fopen msvcrt.dll
+     9                                  
+    10                                  segment data use32 class=data
+    11                                      ; ...
+    12 00000000 6E756D61724D696E69-         fisier db "numarMinim.txt", 0
+    12 00000009 6D2E74787400       
+    13 0000000F 772B00                      accesmode db "w+", 0
+    14 00000012 FFFFFFFF                    descriptor dd -1
+    15 00000016 00000000                    curent dd 0
+    16 0000001A 256300                      format db "%c", 0
+    17 0000001D 4E756D6172756C206D-         format1 db "Numarul minim este %d%d%d", 0
+    17 00000026 696E696D2065737465-
+    17 0000002F 2025642564256400   
+    18 00000037 FFFFFFFF                    min1 dd -1
+    19 0000003B FFFFFFFF                    min2 dd -1
+    20 0000003F FFFFFFFF                    min3 dd -1
+    21                                  
+    22                                  segment code use32 class=code
+    23                                      start:
+    24                                          citire:
+    25 00000000 68[16000000]                        push dword curent
+    26 00000005 68[1A000000]                        push dword format
+    27 0000000A FF15[00000000]                      call [scanf]
+    28 00000010 83C408                              add esp, 8
+    29                                              
+    30 00000013 A1[16000000]                        mov eax, [curent]
+    31                                          
+    32 00000018 83F821                              cmp eax, "!"
+    33 0000001B 7437                                je final
+    34                                             
+    35 0000001D 83E830                              sub eax, "0"
+    36                                              
+    37 00000020 A901000000                          test eax, 01h
+    38 00000025 74D9                                jz citire
+    39                                              
+    40 00000027 3B05[37000000]                      cmp eax, dword[min1]
+    41 0000002D 7307                                jae minim2
+    42                                              
+    43 0000002F A3[37000000]                        mov dword[min1], eax
+    44 00000034 EBCA                                jmp citire
+    45                                              
+    46                                              minim2:
+    47                                              
+    48 00000036 3B05[3B000000]                      cmp eax, dword[min2]
+    49 0000003C 7307                                jae minim3
+    50                                              
+    51 0000003E A3[3B000000]                        mov dword[min2], eax
+    52 00000043 EBBB                                jmp citire
+    53                                              
+    54                                              minim3:
+    55                                              
+    56 00000045 3B05[3F000000]                      cmp eax, dword[min3]   
+    57 0000004B 73B3                                jae citire
+    58                                              
+    59 0000004D A3[3F000000]                        mov dword[min3], eax
+    60 00000052 EBAC                                jmp citire
+    61                                              
+    62                                          final:
+    63 00000054 68[0F000000]                    push dword accesmode
+    64 00000059 68[00000000]                    push dword fisier
+    65 0000005E FF15[00000000]                  call [fopen]
+    66 00000064 83C408                          add esp, 8
+    67                                          
+    68 00000067 A3[12000000]                    mov [descriptor], eax
+    69                                          
+    70 0000006C FF35[3F000000]                  push dword[min3]
+    71 00000072 FF35[3B000000]                  push dword[min2]
+    72 00000078 FF35[37000000]                  push dword[min1]
+    73 0000007E 68[1D000000]                    push dword format1
+    74 00000083 FF35[12000000]                  push dword [descriptor]
+    75 00000089 FF15[00000000]                  call [fprintf]
+    76 0000008F 83C414                          add esp, 4*5
+    77                                          
+    78 00000092 6A00                            push    dword 0      
+    79 00000094 FF15[00000000]                  call    [exit]      
